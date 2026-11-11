@@ -39,6 +39,41 @@ def range_query(data, latitude=None, longitude=None, time=None):
 
     return results
 
+def similirity_query(data, target, range=None, delta=0.5):
+    # Not sure what i should set the default value of delta to?
+
+    # Also not sure if it is intentional that the method relies on timestamps,
+    # or if it's meant to rely to time passed.
+    # If the latter then I think there is a fix, if not then then this should work?
+
+    results = []
+
+    target_lon = target[0]
+    target_lat = target[1]
+    target_time = target[2]
+
+    if range==None:
+        range =[target_time[0],target_time[-1]]
+
+    for traj in data:
+        traj_lon = traj[0]
+        traj_lat = traj[1]
+        traj_time = traj[2]
+
+        # Not sure what should happen if they have varying number of times?
+        # I also kind of feel like it would make more sense to evaluate the polynomial here rather than parsing it points?
+        # But idk???
+
+        for i in range(min(len(target_time), len(traj_time))):
+            if (target_lon[i] - traj_lon[i])**2 + (target_lat[i] - traj_lat[i])**2 <= delta**2 and target_time[i] == traj_time[i]:
+                if target_time[i] == target_time[-1] :
+                    results.append(traj)
+                else :
+                    continue
+            else:
+                break
+
+    return results
 
 def compare_results(original_results, simplified_results):
 
